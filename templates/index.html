@@ -29,6 +29,11 @@
 
 <div class="card">
     <h2>Ostatni pomiar</h2>
+    <p id="stacja"></p>
+    <p id="czas"></p>
+    <p id="temp"></p>
+    <p id="wiatr"></p>
+</div>
     <p id="temp"></p>
     <p id="wiatr"></p>
 </div>
@@ -39,6 +44,12 @@
     const dane = {{ dane.to_dict(orient='records') | tojson }};
 
     const last = dane[dane.length - 1];
+
+document.getElementById("czas").innerText =
+    "Data i godzina: " + last.czas;
+
+document.getElementById("stacja").innerText =
+    "Stacja: " + last.stacja;
 
     document.getElementById("temp").innerText =
         "Temperatura: " + last.temperatura + " °C";
