@@ -1,3 +1,25 @@
+import sqlite3
+def zapisz_do_bazy(wiersz):
+    conn = sqlite3.connect("dane.db")
+    c = conn.cursor()
+
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS pomiary (
+            czas TEXT PRIMARY KEY,
+            temperatura REAL,
+            wiatr REAL
+        )
+    """)
+
+    try:
+        c.execute("INSERT INTO pomiary VALUES (?, ?, ?)", 
+                  (wiersz["czas"], wiersz["temperatura"], wiersz["wiatr"]))
+        conn.commit()
+        print("Dodano do bazy:", wiersz)
+    except:
+        print("Pomiar już istnieje")
+
+    conn.close()
 from flask import Flask, render_template
 import requests
 import pandas as pd
