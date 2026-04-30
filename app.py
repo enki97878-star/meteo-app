@@ -17,10 +17,13 @@ def pobierz_dane():
             data = response.json()
 
             wiersz = {
-                "czas": f'{data["data_pomiaru"]} {data["godzina_pomiaru"]}:00',
-                "temperatura": float(data["temperatura"]),
-                "wiatr": float(data["predkosc_wiatru"])
-            }
+    "data": data["data_pomiaru"],
+    "godzina": int(data["godzina_pomiaru"]),
+    "czas": f'{data["data_pomiaru"]} {data["godzina_pomiaru"]}:00',
+    "stacja": data["stacja"],
+    "temperatura": float(data["temperatura"]),
+    "wiatr": float(data["predkosc_wiatru"])
+}
 
             df_nowy = pd.DataFrame([wiersz])
 
