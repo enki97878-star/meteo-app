@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stacja pogodowa</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+        }
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        canvas {
+            max-width: 800px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🌤️ Stacja pogodowa</h1>
+
+<div class="card">
+    <h2>Ostatni pomiar</h2>
+    <p id="temp"></p>
+    <p id="wiatr"></p>
+</div>
+
+<canvas id="wykres"></canvas>
+
+<script>
+    const dane = {{ dane.to_dict(orient='records') | tojson }};
+
+    const last = dane[dane.length - 1];
+
+    document.getElementById("temp").innerText =
+        "Temperatura: " + last.temperatura + " °C";
+
+    document.getElementById("wiatr").innerText =
+        "Wiatr: " + last.wiatr + " m/s";
+
+    const labels = dane.map(d => d.czas);
+    const temp = dane.map(d => d.temperatura);
+    const wiatr = dane.map(d => d.wiatr);
+
+    new Chart(document.getElementById("wykres"), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Temperatura',
+                    data: temp,
+                    borderColor: 'red'
+                },
+                {
+                    label: 'Wiatr',
+                    data: wiatr,
+                    borderColor: 'cyan'
+                }
+            ]
+        }
+    });
+</script>
+
+</body>
+</html>
