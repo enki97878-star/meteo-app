@@ -73,7 +73,7 @@
 </table>
 
 <script>
-    const dane = {{ dane.to_dict(orient='records') | tojson }};
+    const dane = {{ dane | tojson }};
 
     if (dane.length > 0) {
 
