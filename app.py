@@ -2,12 +2,11 @@ import sqlite3
 from flask import Flask, render_template
 import requests
 import pandas as pd
-import time
-import threading
 
 app = Flask(__name__)
 
 URL = "https://danepubliczne.imgw.pl/api/data/synop/id/12200"
+
 
 # 🔹 zapis do bazy
 def zapisz_do_bazy(wiersz):
@@ -27,7 +26,7 @@ def zapisz_do_bazy(wiersz):
 
     try:
         c.execute("""
-            INSERT INTO pomiary (czas, data, godzina, stacja, temperatura, wiatr)
+            INSERT INTO pomiary (czas, data, godzzina, stacja, temperatura, wiatr)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (
             wiersz["czas"],
@@ -46,33 +45,33 @@ def zapisz_do_bazy(wiersz):
     conn.close()
 
 
-# 🔹 pobieranie danych co godzinę
+# 🔹 pobierz dane JEDNORAZOWO
 def pobierz_dane():
-    while True:
-        try:
-            response = requests.get(URL)
-            data = response.json()
+    try:
+        response = requests.get(URL)
+        data = response.json()
 
-            wiersz = {
-                "data": data["data_pomiaru"],
-                "godzina": int(data["godzina_pomiaru"]),
-                "czas": f'{data["data_pomiaru"]} {data["godzina_pomiaru"]}:00',
-                "stacja": data["stacja"],
-                "temperatura": float(data["temperatura"]),
-                "wiatr": float(data["predkosc_wiatru"])
-            }
+        wiersz = {
+            "data": data["data_pomiaru"],
+            "godzina": int(data["godzina_pomiaru"]),
+            "czas": f'{data["data_pomiaru"]} {data["godzina_pomiaru"]}:00',
+            "stacja": data["stacja"],
+            "temperatura": float(data["temperatura"]),
+            "wiatr": float(data["predkosc_wiatru"])
+        }
 
-            zapisz_do_bazy(wiersz)
+        zapisz_do_bazy(wiersz)
 
-        except Exception as e:
-            print("Błąd:", e)
-
-        time.sleep(3600)  # co 1 godzinę
+    except Exception as e:
+        print("Błąd:", e)
 
 
 # 🔹 strona główna
 @app.route("/")
 def index():
+    # 👉 przy każdym wejściu zapisuje nowy pomiar
+    pobierz_dane()
+
     conn = sqlite3.connect("dane.db")
 
     df = pd.read_sql_query("""
@@ -84,10 +83,6 @@ def index():
     conn.close()
 
     return render_template("index.html", dane=df)
-
-
-# 🔹 uruchomienie w tle
-threading.Thread(target=pobierz_dane, daemon=True).start()
 
 
 if __name__ == "__main__":
