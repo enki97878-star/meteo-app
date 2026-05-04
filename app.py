@@ -8,7 +8,6 @@ app = Flask(__name__)
 URL = "https://danepubliczne.imgw.pl/api/data/synop/id/12200"
 
 
-# 🔹 zapis do bazy
 def zapisz_do_bazy(wiersz):
     conn = sqlite3.connect("dane.db")
     c = conn.cursor()
@@ -38,14 +37,12 @@ def zapisz_do_bazy(wiersz):
         ))
         conn.commit()
         print("Dodano:", wiersz)
-
     except:
         print("Pomiar już istnieje")
 
     conn.close()
 
 
-# 🔹 pobierz dane JEDNORAZOWO
 def pobierz_dane():
     try:
         response = requests.get(URL)
@@ -66,10 +63,8 @@ def pobierz_dane():
         print("Błąd:", e)
 
 
-# 🔹 strona główna
 @app.route("/")
 def index():
-    # 👉 przy każdym wejściu zapisuje nowy pomiar
     pobierz_dane()
 
     conn = sqlite3.connect("dane.db")
@@ -82,10 +77,11 @@ def index():
 
     conn.close()
 
-   return render_template(
-    "index.html",
-    dane=df.to_dict(orient="records")
-)
+    return render_template(
+        "index.html",
+        dane=df.to_dict(orient="records")
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
