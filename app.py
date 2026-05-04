@@ -82,8 +82,10 @@ def index():
 
     conn.close()
 
-    return render_template("index.html", dane=df)
-
+   return render_template(
+    "index.html",
+    dane=df.to_dict(orient="records")
+)
 
 if __name__ == "__main__":
     app.run(debug=True)
