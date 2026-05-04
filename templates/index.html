@@ -21,6 +21,21 @@
             max-width: 800px;
             margin-top: 20px;
         }
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            width: 80%;
+            background: white;
+            color: black;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background: #1e293b;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -34,51 +49,71 @@
     <p id="temp"></p>
     <p id="wiatr"></p>
 </div>
-    <p id="temp"></p>
-    <p id="wiatr"></p>
-</div>
 
 <canvas id="wykres"></canvas>
+
+<h2>📊 Archiwum pomiarów</h2>
+
+<table>
+    <tr>
+        <th>Data</th>
+        <th>Godzina</th>
+        <th>Temperatura (°C)</th>
+        <th>Wiatr (m/s)</th>
+    </tr>
+
+    {% for row in dane %}
+    <tr>
+        <td>{{ row.data }}</td>
+        <td>{{ row.godzina }}</td>
+        <td>{{ row.temperatura }}</td>
+        <td>{{ row.wiatr }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 <script>
     const dane = {{ dane.to_dict(orient='records') | tojson }};
 
-    const last = dane[dane.length - 1];
+    if (dane.length > 0) {
 
-document.getElementById("czas").innerText =
-    "Data i godzina: " + last.czas;
+        const last = dane[0]; // najnowszy rekord (bo sort DESC)
 
-document.getElementById("stacja").innerText =
-    "Stacja: " + last.stacja;
+        document.getElementById("czas").innerText =
+            "Data i godzina: " + last.czas;
 
-    document.getElementById("temp").innerText =
-        "Temperatura: " + last.temperatura + " °C";
+        document.getElementById("stacja").innerText =
+            "Stacja: " + last.stacja;
 
-    document.getElementById("wiatr").innerText =
-        "Wiatr: " + last.wiatr + " m/s";
+        document.getElementById("temp").innerText =
+            "Temperatura: " + last.temperatura + " °C";
 
-    const labels = dane.map(d => d.czas);
-    const temp = dane.map(d => d.temperatura);
-    const wiatr = dane.map(d => d.wiatr);
+        document.getElementById("wiatr").innerText =
+            "Wiatr: " + last.wiatr + " m/s";
 
-    new Chart(document.getElementById("wykres"), {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Temperatura',
-                    data: temp,
-                    borderColor: 'red'
-                },
-                {
-                    label: 'Wiatr',
-                    data: wiatr,
-                    borderColor: 'cyan'
-                }
-            ]
-        }
-    });
+        const labels = dane.map(d => d.czas);
+        const temp = dane.map(d => d.temperatura);
+        const wiatr = dane.map(d => d.wiatr);
+
+        new Chart(document.getElementById("wykres"), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Temperatura (°C)',
+                        data: temp,
+                        borderColor: 'red'
+                    },
+                    {
+                        label: 'Wiatr (m/s)',
+                        data: wiatr,
+                        borderColor: 'cyan'
+                    }
+                ]
+            }
+        });
+    }
 </script>
 
 </body>
