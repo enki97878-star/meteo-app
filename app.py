@@ -26,7 +26,7 @@ def zapisz_do_bazy(wiersz):
 
     try:
         c.execute("""
-            INSERT INTO pomiary (czas, data, godzzina, stacja, temperatura, wiatr)
+            INSERT INTO pomiary (czas, data, godzina, stacja, temperatura, wiatr)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (
             wiersz["czas"],
