@@ -90,7 +90,10 @@ def index():
 
     df = pd.read_sql(query, engine)
 
-    return render_template("index.html", dane=df)
+    return render_template(
+    "index.html",
+    dane=df.to_dict(orient="records")
+)
 
 
 if __name__ == "__main__":
